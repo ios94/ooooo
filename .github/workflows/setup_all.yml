@@ -17,15 +17,15 @@ jobs:
           rsync -a --exclude '.github' --exclude '.gitmodules' --exclude 'Zsign' --exclude 'IDeviceKitten' tmp_unzip/ashteipa-main/ ./
           rm -rf tmp_unzip ashteipa-redesign.zip
 
-      - name: Download Zsign and IDeviceKitten
+      - name: Get Zsign and IDeviceKitten from ios94/ashteipa
         run: |
-          rm -rf Zsign IDeviceKitten
-          git clone --recursive https://github.com/khcrysalis/Zsign-Package Zsign
-          git -C Zsign checkout 6ffe703
-          git -C Zsign submodule update --init --recursive
-          git clone --recursive https://github.com/khcrysalis/IDeviceKit IDeviceKitten
-          git -C IDeviceKitten checkout 4b4b772
-          git -C IDeviceKitten submodule update --init --recursive
+          rm -rf Zsign IDeviceKitten tmp_src
+          git clone --recursive https://github.com/ios94/ashteipa tmp_src
+          cp -r tmp_src/Zsign Zsign
+          cp -r tmp_src/IDeviceKitten IDeviceKitten
+          rm -rf tmp_src
+          test -n "$(ls -A Zsign)"
+          test -n "$(ls -A IDeviceKitten)"
           find Zsign IDeviceKitten -name .git -prune -exec rm -rf {} +
           find Zsign IDeviceKitten -name .gitmodules -delete
 
