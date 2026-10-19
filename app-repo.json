@@ -1,0 +1,55 @@
+{
+  "name": "AshteMobile Repository",
+  "identifier": "com.ashte.mobile.repo",
+  "iconURL": "https://ashtemobile.site/a.png",
+  "website": "https://ashtemobile.site",
+  "apps": [
+    {
+      "name": "AshteMobile",
+      "bundleIdentifier": "com.ashte.mobile",
+      "developerName": "AshteMobile",
+      "iconURL": "https://ashtemobile.site/a.png",
+      "localizedDescription": "AshteMobile is an on-device IPA signing, installation, and app management tool.",
+      "subtitle": "IPA signing and install tools",
+      "tintColor": "f3b83f",
+      "versions": [
+        {
+          "version": "2.6.0",
+          "date": "2025-12-22T08:20:00Z",
+          "size": 12598584,
+          "downloadURL": "https://github.com/ipaomtk-a11y/Portal-ashte/releases/latest/download/AshteMobile.ipa"
+        }
+      ],
+      "appPermissions": {},
+      "screenshotURLs": [
+        "https://ashtemobile.site/a.png"
+      ],
+      "version": "2.6.0",
+      "versionDate": "2025-12-22T08:20:00Z",
+      "size": 12598584,
+      "downloadURL": "https://github.com/ipaomtk-a11y/Portal-ashte/releases/latest/download/AshteMobile.ipa"
+    }
+  ],
+  "news": [
+    {
+      "title": "AshteMobile",
+      "identifier": "ashtemobile-home",
+      "caption": "AshteMobile brings IPA signing, app management, and installation tools together in one app.",
+      "tintColor": "f3b83f",
+      "imageURL": "https://ashtemobile.site/a.png",
+      "date": "2025-02-04",
+      "url": "https://ashtemobile.site",
+      "notify": false
+    },
+    {
+      "title": "About AshteMobile",
+      "identifier": "ashtemobile-about",
+      "caption": "Install, sign, and manage IPA files from trusted sources with AshteMobile.",
+      "tintColor": "8A28F7",
+      "imageURL": "https://ashtemobile.site/a.png",
+      "url": "https://ashtemobile.site",
+      "date": "2025-02-03",
+      "notify": true
+    }
+  ]
+}
