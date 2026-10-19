@@ -1,0 +1,38 @@
+name: Setup All Files
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Copy all project files from zip
+        run: |
+          test -f ashteipa-redesign.zip
+          mkdir tmp_unzip
+          unzip -q ashteipa-redesign.zip -d tmp_unzip
+          rsync -a --exclude '.github' --exclude '.gitmodules' --exclude 'Zsign' --exclude 'IDeviceKitten' tmp_unzip/ashteipa-main/ ./
+          rm -rf tmp_unzip ashteipa-redesign.zip
+
+      - name: Download Zsign and IDeviceKitten
+        run: |
+          rm -rf Zsign IDeviceKitten
+          git clone --recursive https://github.com/khcrysalis/Zsign-Package Zsign
+          git -C Zsign checkout 6ffe703
+          git -C Zsign submodule update --init --recursive
+          git clone --recursive https://github.com/khcrysalis/IDeviceKit IDeviceKitten
+          git -C IDeviceKitten checkout 4b4b772
+          git -C IDeviceKitten submodule update --init --recursive
+          find Zsign IDeviceKitten -name .git -prune -exec rm -rf {} +
+          find Zsign IDeviceKitten -name .gitmodules -delete
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Add all project files" || echo "nothing to commit"
+          git push
