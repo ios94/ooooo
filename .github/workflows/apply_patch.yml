@@ -1,0 +1,18 @@
+name: Apply Redesign Patch
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          unzip -o redesign-patch.zip
+          rm redesign-patch.zip
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Apply colorful redesign" || echo "nothing to commit"
+          git push
