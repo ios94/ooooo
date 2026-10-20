@@ -24,10 +24,27 @@ final class SigningHandler: NSObject {
 	
 	init(app: AppInfoPresentable, options: Options = OptionsManager.shared.options) {
 		self._app = app
+		var options = options
+		
+		// Video Star only works when the provisioning file is removed, so turn it on
+		// automatically for that app. Every other app follows the normal setting.
+		if SigningHandler._isVideoStar(app, options) {
+			options.removeProvisioning = true
+		}
+		
 		self._options = options
 		self._uniqueWorkDir = _fileManager.temporaryDirectory
 			.appendingPathComponent("AshteMobileSigning_\(_uuid)", isDirectory: true)
 		super.init()
+	}
+	
+	private static func _isVideoStar(_ app: AppInfoPresentable, _ options: Options) -> Bool {
+		let candidates = [app.name, app.identifier, options.appName, options.appIdentifier]
+		return candidates.contains { value in
+			guard let value else { return false }
+			let normalized = value.lowercased().replacingOccurrences(of: " ", with: "")
+			return normalized.contains("videostar")
+		}
 	}
 	
 	func copy() async throws {
