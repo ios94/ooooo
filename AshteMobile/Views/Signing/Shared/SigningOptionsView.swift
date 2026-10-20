@@ -14,7 +14,7 @@ struct SigningOptionsView: View {
 	var temporaryOptions: Options?
 	
     // ئەمە یارمەتیدەرە بۆ ئەوەی بزانین یەکەم جارە یان نا
-    @AppStorage("hasSetDefaultRemoveProvisioning") private var hasSetDefaultRemoveProvisioning = false
+    @AppStorage("hasResetRemoveProvisioningOff") private var hasResetRemoveProvisioningOff = false
     
 	// MARK: Body
 	var body: some View {
@@ -159,10 +159,11 @@ struct SigningOptionsView: View {
             }
         }
         .onAppear {
-            // ئەم بەشە وادەکات تەنها یەکەم جار کە دەکرێتەوە خۆی بیکاتە true (واتە هەڵکراو بێت)
-            if !hasSetDefaultRemoveProvisioning {
-                options.removeProvisioning = true
-                hasSetDefaultRemoveProvisioning = true
+            // Remove Provisioning is OFF by default. It is switched on automatically
+            // only for Video Star (see SigningHandler). One-time reset of the old default.
+            if !hasResetRemoveProvisioningOff {
+                options.removeProvisioning = false
+                hasResetRemoveProvisioningOff = true
             }
         }
 	}
