@@ -1,0 +1,32 @@
+name: Update Project
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Replace project files from zip
+        run: |
+          test -f ashteipa-v2.zip
+          mkdir tmp_unzip
+          unzip -q ashteipa-v2.zip -d tmp_unzip
+          rm -rf Feather Feather.xcodeproj Feather.xcworkspace
+          rm -rf AshteMobile AshteMobile.xcodeproj AshteMobile.xcworkspace
+          rm -rf NimbleKit AltSourceKit Images
+          rsync -a --exclude '.github' --exclude '.gitmodules' --exclude 'Zsign' --exclude 'IDeviceKitten' tmp_unzip/ashteipa-main/ ./
+          rm -rf tmp_unzip ashteipa-v2.zip
+          test -f AshteMobile.xcodeproj/project.pbxproj
+          test -n "$(ls -A Zsign)"
+          test -n "$(ls -A IDeviceKitten)"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Update AshteMobile: new design, signing fixes, rename" || echo "nothing to commit"
+          git push
