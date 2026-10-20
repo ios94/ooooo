@@ -52,7 +52,7 @@ struct CertificatesView: View {
             }
             .padding(.bottom, 20)
         }
-        .background(Color(UIColor.systemGroupedBackground).ignoresSafeArea())
+        .background(AshteBackground())
         .navigationTitle(.localized("Certificates"))
         .overlay {
             if _certificates.isEmpty {
@@ -67,7 +67,8 @@ struct CertificatesView: View {
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.system(size: 18, weight: .bold))
-                            .symbolRenderingMode(.hierarchical)
+                            .symbolRenderingMode(.palette)
+                            .foregroundStyle(.white, AshteTheme.violet)
                     }
                 }
             }
@@ -99,7 +100,7 @@ extension CertificatesView {
                 // Icon Area
                 ZStack {
                     Circle()
-                        .fill(isSelected ? Color.accentColor : Color.gray.opacity(0.1))
+                        .fill(isSelected ? AshteTheme.primary : LinearGradient(colors: [Color.gray.opacity(0.12), Color.gray.opacity(0.12)], startPoint: .top, endPoint: .bottom))
                         .frame(width: 45, height: 45)
                     
                     Image(systemName: "checkmark.seal.fill")
@@ -116,7 +117,7 @@ extension CertificatesView {
                 // Selection Indicator
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.accentColor)
+                        .foregroundStyle(AshteTheme.violet)
                         .font(.title3)
                         .transition(.scale.combined(with: .opacity))
                 }
@@ -125,12 +126,12 @@ extension CertificatesView {
             .background(
                 RoundedRectangle(cornerRadius: 20, style: .continuous)
                     .fill(Color(UIColor.secondarySystemGroupedBackground))
-                    .shadow(color: isSelected ? Color.accentColor.opacity(0.15) : Color.black.opacity(0.03), 
+                    .shadow(color: isSelected ? AshteTheme.violet.opacity(0.25) : Color.black.opacity(0.03), 
                             radius: 10, x: 0, y: 5)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .stroke(isSelected ? Color.accentColor.opacity(0.5) : Color.clear, lineWidth: 2)
+                    .strokeBorder(isSelected ? AshteTheme.primary : LinearGradient(colors: [.clear, .clear], startPoint: .top, endPoint: .bottom), lineWidth: 2.5)
             )
             .contextMenu {
                 _contextActions(for: cert)
@@ -144,33 +145,14 @@ extension CertificatesView {
         .scaleEffect(isSelected ? 1.02 : 1.0)
     }
 
-    @ViewBuilder
     private func _emptyStateView() -> some View {
-        if #available(iOS 17, *) {
-            ContentUnavailableView {
-                Label(.localized("No Certificates"), systemImage: "shield.slash.fill")
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundColor(.accentColor)
-            } description: {
-                Text(.localized("Get started signing by importing your first certificate. Your keys will be stored securely."))
-            } actions: {
-                Button {
-                    _isAddingPresenting = true
-                } label: {
-                    HStack {
-                        Image(systemName: "square.and.arrow.down")
-                        Text(.localized("Import Now"))
-                    }
-                    .fontWeight(.bold)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-                    .background(Color.accentColor)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
-                }
-                .buttonStyle(.plain)
-            }
-        }
+        AshteEmptyState(
+            icon: "shield.lefthalf.filled",
+            title: .localized("No Certificates"),
+            message: .localized("Get started signing by importing your first certificate. Your keys will be stored securely."),
+            buttonTitle: .localized("Import Now"),
+            action: { _isAddingPresenting = true }
+        )
     }
     
     @ViewBuilder

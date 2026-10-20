@@ -20,6 +20,7 @@ struct SourceAppsTableRepresentableView: UIViewRepresentable {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.delegate = context.coordinator
         tableView.dataSource = context.coordinator
+        tableView.backgroundColor = .clear
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "AppCell")
         tableView.register(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: "SectionHeader")
         
@@ -231,6 +232,7 @@ extension SourceAppsTableRepresentableView {
         
         func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
             let cell = tableView.dequeueReusableCell(withIdentifier: "AppCell", for: indexPath)
+            cell.backgroundColor = .clear
             let entry: (source: ASRepository, app: ASRepository.App)
             switch sortOption {
             case .default: entry = _sortedApps[indexPath.row]

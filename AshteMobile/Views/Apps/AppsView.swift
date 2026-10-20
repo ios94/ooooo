@@ -19,6 +19,7 @@ struct AppsView: View {
     @State private var _searchText = ""
     @State private var _selectedCategory = "All"
     @State private var _selectedRoute: SourceAppsView.SourceAppRoute?
+    @State private var _didFinishLoading = false
     
     @FetchRequest(
         entity: AltSource.entity(),
@@ -50,14 +51,24 @@ struct AppsView: View {
                         onSelect: { self._selectedRoute = $0 }
                     )
                     .ignoresSafeArea()
+                } else if _didFinishLoading {
+                    AshteEmptyState(
+                        icon: "wifi.exclamationmark",
+                        title: .localized("Couldn't Load Apps"),
+                        message: .localized("Check your internet connection and try again."),
+                        buttonTitle: .localized("Try Again"),
+                        action: { _retry() }
+                    )
                 } else {
                     VStack {
                         Spacer()
                         ProgressView("Loading Apps...")
+                            .tint(AshteTheme.pink)
                         Spacer()
                     }
                 }
             }
+            .background(AshteBackground())
             .searchable(text: $_searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search Apps")
             .refreshable {
                 await viewModel.fetchSources(_sources, refresh: true)
@@ -71,6 +82,15 @@ struct AppsView: View {
                 _addDefaultSource()
             }
             await viewModel.fetchSources(_sources)
+            _didFinishLoading = true
+        }
+    }
+    
+    private func _retry() {
+        _didFinishLoading = false
+        Task {
+            await viewModel.fetchSources(_sources, refresh: true)
+            _didFinishLoading = true
         }
     }
     

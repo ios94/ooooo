@@ -1,6 +1,6 @@
 //
 //  UIApplication+open.swift
-//  Feather
+//  AshteMobile
 //
 //  Created by samara on 21.04.2025.
 //

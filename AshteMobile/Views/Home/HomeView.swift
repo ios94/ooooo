@@ -333,60 +333,14 @@ struct HomeView: View {
     }
     
     private func handleAutoSign(for app: AshteHomeAppModel) {
-        if HomeGlobalLock.isSigningActive { return }
-        HomeGlobalLock.isSigningActive = true
+        if installationMethod == 1 { return }
         
-        if installationMethod == 1 {
-            HomeGlobalLock.isSigningActive = false
-            return
-        }
+        let signStartTime = Date().addingTimeInterval(-2.0)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            let request = NSFetchRequest<Imported>(entityName: "Imported")
-            request.sortDescriptors = [NSSortDescriptor(keyPath: \Imported.date, ascending: false)]
-            request.fetchLimit = 10 
-            
-            guard let importedApps = try? Storage.shared.context.fetch(request) else {
-                HomeGlobalLock.isSigningActive = false
-                return
-            }
-            
-            guard let importedApp = importedApps.first(where: { 
-                let name = ($0.value(forKey: "name") as? String) ?? ""
-                return name.localizedCaseInsensitiveContains(app.name) || app.name.localizedCaseInsensitiveContains(name) 
-            }) ?? importedApps.first else {
-                HomeGlobalLock.isSigningActive = false
-                return
-            }
-            
-            let options = OptionsManager.shared.options
-            let certRequest = NSFetchRequest<CertificatePair>(entityName: "CertificatePair")
-            certRequest.sortDescriptors = [NSSortDescriptor(keyPath: \CertificatePair.date, ascending: false)]
-            let certs = try? Storage.shared.context.fetch(certRequest)
-            let storedCertIndex = UserDefaults.standard.integer(forKey: "ashtemobile.selectedCert")
-            let selectedCert = (certs?.indices.contains(storedCertIndex) == true) ? certs![storedCertIndex] : certs?.first
-            
-            let signStartTime = Date().addingTimeInterval(-2.0)
-            
-            FR.signPackageFile(
-                importedApp,
-                using: options,
-                icon: nil,
-                certificate: selectedCert
-            ) { error in
-                DispatchQueue.main.async {
-                    HomeGlobalLock.isSigningActive = false
-                    if error == nil {
-                        if options.post_deleteAppAfterSigned {
-                            Storage.shared.deleteApp(for: importedApp)
-                        }
-                        
-                        NotificationCenter.default.post(name: Notification.Name("AshteMobile.ShowSignSuccess"), object: app.name)
-                        NotificationCenter.default.post(name: Notification.Name("AshteMobile.installApp"), object: signStartTime)
-                    } else {
-                        print("Signing Error: \(String(describing: error))")
-                    }
-                }
+        AshteAutoSigner.signAfterDownload(id: app.stringID, appName: app.name) { result in
+            if case .signed = result {
+                NotificationCenter.default.post(name: Notification.Name("AshteMobile.ShowSignSuccess"), object: app.name)
+                NotificationCenter.default.post(name: Notification.Name("AshteMobile.installApp"), object: signStartTime)
             }
         }
     }
@@ -519,6 +473,7 @@ struct AshteHomeAppCell: View {
         let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.impactOccurred()
         if let dlURL = app.downloadURLObject {
+            AshteAutoSigner.markDownloadStart(id: app.stringID)
             _ = DownloadManager.shared.startDownload(
                 from: dlURL, 
                 id: app.stringID,
@@ -727,6 +682,7 @@ struct AshteHomeAppDetailView: View {
         let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.impactOccurred()
         if let dlURL = app.downloadURLObject {
+            AshteAutoSigner.markDownloadStart(id: app.stringID)
             _ = DownloadManager.shared.startDownload(
                 from: dlURL, 
                 id: app.stringID,

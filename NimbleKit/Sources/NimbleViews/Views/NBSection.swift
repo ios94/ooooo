@@ -1,6 +1,6 @@
 //
 //  SectionProminentHeaderWrapper.swift
-//  Feather
+//  AshteMobile
 //
 //  Created by samara on 11.04.2025.
 //
@@ -45,7 +45,20 @@ where 	Content: View,
 	public var body: some View {
 		Section(
 			header:
-				HStack(alignment: .center, spacing: 4) {
+				HStack(alignment: .center, spacing: 6) {
+					Capsule()
+						.fill(
+							LinearGradient(
+								colors: [
+									Color(.sRGB, red: 124/255, green: 92/255, blue: 255/255, opacity: 1),
+									Color(.sRGB, red: 255/255, green: 79/255, blue: 154/255, opacity: 1)
+								],
+								startPoint: .top,
+								endPoint: .bottom
+							)
+						)
+						.frame(width: 4, height: 18)
+					
 					if let _systemName {
 						Image(systemName: _systemName)
 							.font(.system(size: 12))
