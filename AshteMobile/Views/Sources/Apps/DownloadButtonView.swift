@@ -124,7 +124,7 @@ struct DownloadButtonView: View {
 			return
 		}
 		
-		AshteAutoSigner.signAfterDownload(id: app.currentUniqueId, appName: app.name) { result in
+		AshteAutoSigner.signAfterDownload(id: app.currentUniqueId, appName: app.name ?? "") { result in
 			self.isSigning = false
 			
 			if case .signed = result {
